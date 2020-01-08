@@ -15,31 +15,26 @@ COPY ./qemu-arm-static /usr/bin/qemu-arm-static
 COPY ./qemu-aarch64-static /usr/bin/qemu-aarch64-static
 
 RUN echo force-unsafe-io | tee /etc/dpkg/dpkg.cfg.d/docker-apt-speedup
-RUN apt-get update
+RUN apt-get update && apt-get install socat -y && apt-get clean && rm -R /var/cache/apt && rm -R /var/lib/apt/lists
 
 # set noninteractive installation
-ENV DEBIAN_FRONTEND=noninteractive
+#ENV DEBIAN_FRONTEND=noninteractive
 #install tzdata package
-RUN apt-get install tzdata -y
+#RUN apt-get install tzdata -y
 # set your timezone
-RUN ln -fs /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-RUN dpkg-reconfigure --frontend noninteractive tzdata
+#RUN ln -fs /usr/share/zoneinfo/Europe/Zurich /etc/localtime
+#RUN dpkg-reconfigure --frontend noninteractive tzdata
 
-RUN apt-get install software-properties-common -y
-RUN add-apt-repository universe
-RUN add-apt-repository multiverse
+#RUN apt-get install software-properties-common -y
+#RUN add-apt-repository universe
+#RUN add-apt-repository multiverse
 
-RUN apt-get install socat -y
 
 RUN mkdir -p /home/socat
 RUN useradd -M -d /home/socat -u 911 -U -s /bin/bash socat
 RUN usermod -G users socat
 
 RUN chown socat:socat /home/socat -R
-
-RUN apt-get clean
-RUN rm -Rf /var/lib/apt/lists
-RUN rm -Rf /var/cache/apt
 
 RUN rm /usr/bin/qemu-i386-static /usr/bin/qemu-x86_64-static /usr/bin/qemu-arm-static /usr/bin/qemu-aarch64-static
 
